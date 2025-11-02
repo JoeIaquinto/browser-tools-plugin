@@ -9,7 +9,7 @@ Minimal CDP tools for collaborative site exploration.
 ./start.ts --profile
 ```
 
-Start Chrome on `:9222` with remote debugging enabled. Use `--profile` flag to copy your default Chrome profile (cookies, logins). Without the flag, starts with a fresh profile.
+Start Chrome on `:9222` with remote debugging enabled. Use `--profile` flag to copy the default Chrome profile (cookies, logins). Without the flag, starts with a fresh profile.
 
 ## Navigate
 
@@ -33,11 +33,11 @@ Execute arbitrary JavaScript in the active tab. Code runs in async context.
 ## Ask User to Pick Element
 
 ```bash
-./x.js 'await pick()'
 ./x.js 'await pick("Click the article title")'
+./x.js 'await pick("Select the submit button")'
 ```
 
-Show overlay and ask user to click an element. Returns:
+Show overlay and ask user to click an element. The message parameter is required and should describe what element to click. Returns:
 ```
 tag: h1
 id: title

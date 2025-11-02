@@ -13,6 +13,9 @@ const p = (await b.pages()).at(-1);
 await p.evaluate(() => {
 	if (!window.pick) {
 		window.pick = async (message) => {
+			if (!message) {
+				throw new Error("pick() requires a message parameter describing what to click");
+			}
 			return new Promise((resolve) => {
 				const overlay = document.createElement("div");
 				overlay.style.cssText =
@@ -26,7 +29,7 @@ await p.evaluate(() => {
 				const banner = document.createElement("div");
 				banner.style.cssText =
 					"position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f2937;color:white;padding:12px 24px;border-radius:8px;font:14px sans-serif;box-shadow:0 4px 12px rgba(0,0,0,0.3);pointer-events:auto;z-index:2147483647";
-				banner.textContent = message || "Click element (ESC to cancel)";
+				banner.textContent = message + " (ESC to cancel)";
 
 				document.body.append(banner, overlay);
 
@@ -82,7 +85,7 @@ if (!code) {
 	console.log("Examples:");
 	console.log('  x.js "document.title"');
 	console.log('  x.js "document.querySelectorAll(\'a\').length"');
-	console.log('  x.js "await pick()"  // Click to select element');
+	console.log('  x.js "await pick(\'Click the login button\')"');
 	process.exit(1);
 }
 
