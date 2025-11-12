@@ -6,18 +6,22 @@ import puppeteer from "puppeteer-core";
 const useProfile = process.argv[2] === "--profile";
 
 if (process.argv[2] && process.argv[2] !== "--profile") {
-	console.log("Usage: start.ts [--profile]");
+	console.log("Usage: browser-start.js [--profile]");
 	console.log("\nOptions:");
 	console.log("  --profile  Copy your default Chrome profile (cookies, logins)");
 	console.log("\nExamples:");
-	console.log("  start.ts            # Start with fresh profile");
-	console.log("  start.ts --profile  # Start with your Chrome profile");
+	console.log("  browser-start.js            # Start with fresh profile");
+	console.log("  browser-start.js --profile  # Start with your Chrome profile");
 	process.exit(1);
 }
 
 // Kill existing Chrome
+// read pid from previous run and kill
 try {
-	execSync("killall 'Google Chrome'", { stdio: "ignore" });
+	const pid = execSync("cat ~/.cache/scraping/chrome.pid", {
+		encoding: "utf-8",
+	}).trim();
+	execSync(`kill ${pid}`, { stdio: "ignore" });
 } catch {}
 
 // Wait a bit for processes to fully die
@@ -29,17 +33,21 @@ execSync("mkdir -p ~/.cache/scraping", { stdio: "ignore" });
 if (useProfile) {
 	// Sync profile with rsync (much faster on subsequent runs)
 	execSync(
-		'rsync -a --delete "/Users/badlogic/Library/Application Support/Google/Chrome/" ~/.cache/scraping/',
+		`rsync -a --delete "${process.env["HOME"]}/Library/Application Support/Google/Chrome/" ~/.cache/scraping/`,
 		{ stdio: "pipe" },
 	);
 }
 
 // Start Chrome in background (detached so Node can exit)
-spawn(
+const chromeProcess = spawn(
 	"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-	["--remote-debugging-port=9222", `--user-data-dir=${process.env["HOME"]}/.cache/scraping`],
+	["--remote-debugging-port=9222", `--user-data-dir=${process.env["HOME"]}/.cache/scraping`, '--window-name="Chrome Debugging"'],
 	{ detached: true, stdio: "ignore" },
-).unref();
+);
+
+execSync(`echo ${chromeProcess.pid} > ~/.cache/scraping/chrome.pid`);
+
+chromeProcess.unref();
 
 // Wait for Chrome to be ready by attempting to connect
 let connected = false;

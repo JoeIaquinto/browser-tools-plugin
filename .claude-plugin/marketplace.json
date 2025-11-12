@@ -1,0 +1,22 @@
+{
+  "name": "browser-tools-skills",
+  "owner": {
+    "name": "Joe Iaquinto",
+    "email": "jiaquinto@beta.team"
+  },
+  "metadata": {
+    "description": "A collection of skills that use a headless browser to interact with web pages, scrape data, and automate web tasks.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "browser-tools-skill",
+      "description": "A skill that uses a headless browser to interact with web pages, scrape data, and automate web tasks.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./browser-tools-skill"
+      ]
+    }
+  ]
+}
